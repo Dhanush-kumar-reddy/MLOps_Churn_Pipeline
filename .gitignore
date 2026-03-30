@@ -1,49 +1,35 @@
-# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Virtual environment
 venv/
 env/
 
-# Data
 data/raw/
 data/interim/
 data/processed/
 
-# Models
 models/*.pkl
 models/*.joblib
 models/*.csv
 
-# MLflow
 mlruns/
 mlflow.db
 mlflow/
 
-# Airflow
 airflow/
 airflow.db
 
-# Logs
 logs/
 
-# Mac
 .DS_Store
-
-# Environment
 .env
 
-# Jupyter
 .ipynb_checkpoints
 
-# Docker
 *.tar
 
-# VS Code
 .vscode/
 
-# Salesforce
 .sfdx
