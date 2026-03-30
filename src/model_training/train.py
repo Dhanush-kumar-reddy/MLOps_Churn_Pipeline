@@ -2,36 +2,44 @@ import pandas as pd
 import sys
 import mlflow
 import mlflow.sklearn
+
 from src.logger import logging
 from src.exception import CustomException
-from src.utils import save_object
+from src.utils import save_object, load_config
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
-
 from xgboost import XGBClassifier
 
 
-def train_model(train_path):
+def train_model():
     try:
-        
         logging.info("Model Training Started")
 
-        # Load training data
+        # Load config
+        config = load_config()
+
+        train_path = config["data"]["train_path"]
+        model_path = config["data"]["model_path"]
+        mlflow_uri = config["mlflow"]["tracking_uri"]
+        experiment_name = config["mlflow"]["experiment_name"]
+
+        # Load data
         df = pd.read_csv(train_path)
 
         X = df.drop("Churn", axis=1)
         y = df["Churn"]
-        
-        #tracking with mlflow
-        mlflow.set_tracking_uri("http://127.0.0.1:5001")
-        mlflow.set_experiment("Customer_Churn_Prediction")  
+
+        # MLflow
+        mlflow.set_tracking_uri(mlflow_uri)
+        mlflow.set_experiment(experiment_name)
+
         # Stratified K-Fold
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-        # Models and hyperparameters
+        # Models
         models = {
             "Logistic Regression": {
                 "model": LogisticRegression(max_iter=2000),
@@ -40,7 +48,6 @@ def train_model(train_path):
                     "class_weight": [None, "balanced"]
                 }
             },
-
             "Decision Tree": {
                 "model": DecisionTreeClassifier(),
                 "params": {
@@ -50,7 +57,6 @@ def train_model(train_path):
                     "class_weight": [None, "balanced"]
                 }
             },
-
             "Random Forest": {
                 "model": RandomForestClassifier(),
                 "params": {
@@ -59,14 +65,9 @@ def train_model(train_path):
                     "min_samples_split": [5, 10],
                     "min_samples_leaf": [2, 4],
                     "max_features": ["sqrt"],
-                    "class_weight": [
-                        {0: 1, 1: 2},
-                        {0: 1, 1: 3},
-                        {0: 1, 1: 4}
-                    ]
+                    "class_weight": [{0: 1, 1: 2}, {0: 1, 1: 3}, {0: 1, 1: 4}]
                 }
             },
-
             "XGBoost": {
                 "model": XGBClassifier(eval_metric="logloss"),
                 "params": {
@@ -84,12 +85,10 @@ def train_model(train_path):
         best_score = 0
         best_model_name = ""
 
-        # Training loop
         for name, mp in models.items():
             logging.info(f"Running GridSearch for {name}")
 
             with mlflow.start_run(run_name=name):
-
                 grid = GridSearchCV(
                     estimator=mp["model"],
                     param_grid=mp["params"],
@@ -104,17 +103,9 @@ def train_model(train_path):
                 best = grid.best_estimator_
                 best_cv_score = grid.best_score_
 
-                # Log parameters
                 mlflow.log_params(grid.best_params_)
-
-                # Log metric
                 mlflow.log_metric("ROC_AUC", best_cv_score)
-
-                # Log model
                 mlflow.sklearn.log_model(best, name)
-
-                logging.info(f"{name} Best Parameters: {grid.best_params_}")
-                logging.info(f"{name} Best CV ROC-AUC: {best_cv_score}")
 
                 print(f"{name} Best ROC-AUC:", best_cv_score)
 
@@ -122,30 +113,18 @@ def train_model(train_path):
                     best_score = best_cv_score
                     best_model = best
                     best_model_name = name
-                    
-        # Save best model
-        save_object("models/model.pkl", best_model)
 
-        logging.info(f"Best Model: {best_model_name}")
-        logging.info(f"Best CV ROC-AUC: {best_score}")
-        logging.info("Model Training Completed")
+        # Save best model
+        save_object(model_path, best_model)
 
         print("\nBest Model:", best_model_name)
         print("Best ROC-AUC:", best_score)
 
-        # Feature Importance (for tree models)
-        if hasattr(best_model, "feature_importances_"):
-            feature_importance = pd.DataFrame({
-                "feature": X.columns,
-                "importance": best_model.feature_importances_
-            }).sort_values(by="importance", ascending=False)
-
-            feature_importance.to_csv("models/feature_importance.csv", index=False)
-            logging.info("Feature importance saved at models/feature_importance.csv")
+        logging.info("Model Training Completed")
 
     except Exception as e:
         raise CustomException(e, sys)
 
 
 if __name__ == "__main__":
-    train_model("data/processed/train_final.csv")
+    train_model()

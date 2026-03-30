@@ -1,0 +1,20 @@
+data:
+  train_path: data/processed/train_final.csv
+  test_path: data/processed/test_final.csv
+  model_path: models/model.pkl
+  scaler_path: models/scaler.pkl
+  columns_path: models/columns.pkl
+
+mlflow:
+  tracking_uri: http://127.0.0.1:5001
+  experiment_name: Customer_Churn_Prediction
+
+threshold:
+  default: 0.5
+  tuned: 0.40
+
+airflow:
+  schedule_interval: "@weekly"
+
+project:
+  base_path: /Users/apple/6_Major_Projects/MLOpsChurnPipeline

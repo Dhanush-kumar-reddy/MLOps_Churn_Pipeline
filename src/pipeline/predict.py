@@ -1,33 +1,34 @@
 import pandas as pd
-import joblib
 import sys
 
 from src.logger import logging
 from src.exception import CustomException
-from src.utils import load_object
+from src.utils import load_object, load_config
 
 
 class PredictPipeline:
     def __init__(self):
         try:
-            self.model = load_object("models/model.pkl")
-            self.scaler = load_object("models/scaler.pkl")
-            self.columns = load_object("models/columns.pkl")
+            config = load_config()
+
+            self.model = load_object(config["data"]["model_path"])
+            self.scaler = load_object(config["data"]["scaler_path"])
+            self.columns = load_object(config["data"]["columns_path"])
+            self.threshold = config["threshold"]["tuned"]
+
             logging.info("Prediction Pipeline Initialized")
+
         except Exception as e:
             raise CustomException(e, sys)
 
     def preprocess(self, df):
         try:
-            # Drop customerID if exists
             if "customerID" in df.columns:
                 df.drop("customerID", axis=1, inplace=True)
 
-            # Convert TotalCharges
             df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
             df.dropna(inplace=True)
 
-            # Replace categories
             replace_cols = [
                 "OnlineSecurity", "OnlineBackup", "DeviceProtection",
                 "TechSupport", "StreamingTV", "StreamingMovies"
@@ -38,7 +39,6 @@ class PredictPipeline:
 
             df["MultipleLines"] = df["MultipleLines"].replace({"No phone service": "No"})
 
-            # Feature Engineering
             df["AvgMonthlySpend"] = df["TotalCharges"] / df["tenure"]
             df["AvgMonthlySpend"] = df["AvgMonthlySpend"].fillna(0)
 
@@ -56,16 +56,10 @@ class PredictPipeline:
 
             df["NumServices"] = df[services].apply(lambda x: (x == "Yes").sum(), axis=1)
 
-            # One-hot encoding
             df = pd.get_dummies(df, drop_first=True)
-
-            # Remove spaces in column names
             df.columns = df.columns.str.replace(" ", "_")
-
-            # Align columns
             df = df.reindex(columns=self.columns, fill_value=0)
 
-            # Scaling
             num_cols = ["tenure", "MonthlyCharges", "TotalCharges", "AvgMonthlySpend", "NumServices"]
             df[num_cols] = self.scaler.transform(df[num_cols])
 
@@ -79,7 +73,7 @@ class PredictPipeline:
             data = self.preprocess(df)
 
             prob = self.model.predict_proba(data)[:, 1]
-            pred = (prob > 0.40).astype(int)
+            pred = (prob > self.threshold).astype(int)
 
             result = pd.DataFrame({
                 "Churn_Prediction": pred,
