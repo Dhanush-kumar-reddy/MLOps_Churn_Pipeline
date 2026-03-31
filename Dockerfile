@@ -2,11 +2,15 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY requirements-api.txt .
+# Install dependencies first (better caching)
+COPY requirements-inference.txt .
+RUN pip install --no-cache-dir -r requirements-inference.txt
 
-RUN pip install --no-cache-dir -r requirements-api.txt
-
+# Copy entire project
 COPY . /app
+
+# Install your src package
+RUN pip install -e .
 
 EXPOSE 8000
 

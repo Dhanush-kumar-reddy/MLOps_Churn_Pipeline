@@ -17,4 +17,4 @@ airflow:
   schedule_interval: "@weekly"
 
 project:
-  base_path: /Users/apple/6_Major_Projects/MLOpsChurnPipeline
+  base_path: /app

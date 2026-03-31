@@ -5,27 +5,45 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Build Docker Image (AMD64)
+      run: |
+        docker buildx create --use
+        docker buildx build --platform linux/amd64 -t churn-api --load .
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
       with:
-        python-version: '3.10'
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ap-south-1
 
-    - name: Install dependencies
+    - name: Login to ECR
       run: |
-        pip install -r requirements.txt
+        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 322793536893.dkr.ecr.ap-south-1.amazonaws.com
 
-    - name: Lint check
+    - name: Tag Docker Image
       run: |
-        pip install flake8
-        flake8 src || true
+        docker tag churn-api:latest 322793536893.dkr.ecr.ap-south-1.amazonaws.com/churn-api:latest
 
-    - name: Build Docker Image
+    - name: Push to ECR
       run: |
-        docker build -t churn-api .
+        docker push 322793536893.dkr.ecr.ap-south-1.amazonaws.com/churn-api:latest
+
+    - name: Deploy on EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker pull 322793536893.dkr.ecr.ap-south-1.amazonaws.com/churn-api:latest
+          docker stop churn-container || true
+          docker rm churn-container || true
+          docker run -d -p 8000:8000 --name churn-container 322793536893.dkr.ecr.ap-south-1.amazonaws.com/churn-api:latest

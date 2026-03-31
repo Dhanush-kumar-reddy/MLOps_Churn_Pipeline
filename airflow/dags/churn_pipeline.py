@@ -16,33 +16,33 @@ default_args = {
 with DAG(
     dag_id="customer_churn_pipeline",
     default_args=default_args,
-    schedule_interval=config["airflow"]["schedule_interval"],
+    schedule=config["airflow"]["schedule_interval"],
     catchup=False
 ) as dag:
 
     data_ingestion = BashOperator(
         task_id="data_ingestion",
-        bash_command=f"cd {base_path} && python -m src.data_ingestion.data_ingestion"
+        bash_command=f"python {base_path}/src/data_ingestion/data_ingestion.py"
     )
 
     feature_engineering = BashOperator(
         task_id="feature_engineering",
-        bash_command=f"cd {base_path} && python -m src.feature_engineering.feature_engineering"
+        bash_command=f"python {base_path}/src/feature_engineering/feature_engineering.py"
     )
 
     data_preprocessing = BashOperator(
         task_id="data_preprocessing",
-        bash_command=f"cd {base_path} && python -m src.data_preprocessing.data_preprocessing"
+        bash_command=f"python {base_path}/src/data_preprocessing/data_preprocessing.py"
     )
 
     model_training = BashOperator(
         task_id="model_training",
-        bash_command=f"cd {base_path} && python -m src.model_training.train"
+        bash_command=f"python {base_path}/src/model_training/train.py"
     )
 
     model_evaluation = BashOperator(
         task_id="model_evaluation",
-        bash_command=f"cd {base_path} && python -m src.model_training.evaluate"
+        bash_command=f"python {base_path}/src/model_training/evaluate.py"
     )
 
     data_ingestion >> feature_engineering >> data_preprocessing >> model_training >> model_evaluation
