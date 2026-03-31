@@ -7,28 +7,28 @@ app = FastAPI()
 
 pipeline = PredictPipeline()
 
+from pydantic import BaseModel, Field
 
 class CustomerData(BaseModel):
-    gender: str
-    SeniorCitizen: int
-    Partner: str
-    Dependents: str
-    tenure: int
-    PhoneService: str
-    MultipleLines: str
-    InternetService: str
-    OnlineSecurity: str
-    OnlineBackup: str
-    DeviceProtection: str
-    TechSupport: str
-    StreamingTV: str
-    StreamingMovies: str
-    Contract: str
-    PaperlessBilling: str
-    PaymentMethod: str
-    MonthlyCharges: float
-    TotalCharges: float
-
+    gender: str = Field(example="Female")
+    SeniorCitizen: int = Field(example=0)
+    Partner: str = Field(example="No")
+    Dependents: str = Field(example="No")
+    tenure: int = Field(example=1)
+    PhoneService: str = Field(example="Yes")
+    MultipleLines: str = Field(example="No")
+    InternetService: str = Field(example="Fiber optic")
+    OnlineSecurity: str = Field(example="No")
+    OnlineBackup: str = Field(example="No")
+    DeviceProtection: str = Field(example="No")
+    TechSupport: str = Field(example="No")
+    StreamingTV: str = Field(example="Yes")
+    StreamingMovies: str = Field(example="Yes")
+    Contract: str = Field(example="Month-to-month")
+    PaperlessBilling: str = Field(example="Yes")
+    PaymentMethod: str = Field(example="Electronic check")
+    MonthlyCharges: float = Field(example=95)
+    TotalCharges: float = Field(example=95)
 
 @app.get("/")
 def home():

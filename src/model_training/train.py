@@ -5,7 +5,7 @@ import mlflow.sklearn
 
 from src.logger import logging
 from src.exception import CustomException
-from src.utils import save_object, load_config
+from src.utils import save_object
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -14,32 +14,23 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from xgboost import XGBClassifier
 
 
-def train_model():
+def train_model(train_path):
     try:
         logging.info("Model Training Started")
 
-        # Load config
-        config = load_config()
-
-        train_path = config["data"]["train_path"]
-        model_path = config["data"]["model_path"]
-        mlflow_uri = config["mlflow"]["tracking_uri"]
-        experiment_name = config["mlflow"]["experiment_name"]
-
-        # Load data
+        # Load training data
         df = pd.read_csv(train_path)
 
         X = df.drop("Churn", axis=1)
         y = df["Churn"]
 
         # MLflow
-        mlflow.set_tracking_uri(mlflow_uri)
-        mlflow.set_experiment(experiment_name)
+        mlflow.set_tracking_uri("http://127.0.0.1:5001")
+        mlflow.set_experiment("Customer_Churn_Prediction")
 
         # Stratified K-Fold
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-        # Models
         models = {
             "Logistic Regression": {
                 "model": LogisticRegression(max_iter=2000),
@@ -48,6 +39,7 @@ def train_model():
                     "class_weight": [None, "balanced"]
                 }
             },
+
             "Decision Tree": {
                 "model": DecisionTreeClassifier(),
                 "params": {
@@ -57,6 +49,7 @@ def train_model():
                     "class_weight": [None, "balanced"]
                 }
             },
+
             "Random Forest": {
                 "model": RandomForestClassifier(),
                 "params": {
@@ -65,9 +58,14 @@ def train_model():
                     "min_samples_split": [5, 10],
                     "min_samples_leaf": [2, 4],
                     "max_features": ["sqrt"],
-                    "class_weight": [{0: 1, 1: 2}, {0: 1, 1: 3}, {0: 1, 1: 4}]
+                    "class_weight": [
+                        {0: 1, 1: 2},
+                        {0: 1, 1: 3},
+                        {0: 1, 1: 4}
+                    ]
                 }
             },
+
             "XGBoost": {
                 "model": XGBClassifier(eval_metric="logloss"),
                 "params": {
@@ -85,10 +83,12 @@ def train_model():
         best_score = 0
         best_model_name = ""
 
+        # Training loop
         for name, mp in models.items():
             logging.info(f"Running GridSearch for {name}")
 
             with mlflow.start_run(run_name=name):
+
                 grid = GridSearchCV(
                     estimator=mp["model"],
                     param_grid=mp["params"],
@@ -103,8 +103,13 @@ def train_model():
                 best = grid.best_estimator_
                 best_cv_score = grid.best_score_
 
+                # Log parameters
                 mlflow.log_params(grid.best_params_)
+
+                # Log metric
                 mlflow.log_metric("ROC_AUC", best_cv_score)
+
+                # Log model
                 mlflow.sklearn.log_model(best, name)
 
                 print(f"{name} Best ROC-AUC:", best_cv_score)
@@ -115,7 +120,7 @@ def train_model():
                     best_model_name = name
 
         # Save best model
-        save_object(model_path, best_model)
+        save_object("models/model.pkl", best_model)
 
         print("\nBest Model:", best_model_name)
         print("Best ROC-AUC:", best_score)
@@ -127,4 +132,4 @@ def train_model():
 
 
 if __name__ == "__main__":
-    train_model()
+    train_model("data/processed/train_final.csv")
