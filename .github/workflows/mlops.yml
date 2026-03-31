@@ -17,17 +17,14 @@ jobs:
       with:
         python-version: 3.10
 
-    - name: Install training dependencies
+    - name: Install dependencies
       run: |
         pip install -r requirements.txt
 
-    - name: Run Training Pipeline
+    - name: Lint check
       run: |
-        python -m src.data_ingestion.data_ingestion
-        python -m src.feature_engineering.feature_engineering
-        python -m src.data_preprocessing.data_preprocessing
-        python -m src.model_training.train
-        python -m src.model_training.evaluate
+        pip install flake8
+        flake8 src
 
     - name: Build Docker Image
       run: |
