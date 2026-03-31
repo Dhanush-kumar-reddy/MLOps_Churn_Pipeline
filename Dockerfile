@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies first (better caching)
 COPY requirements-inference.txt .
-RUN pip install --no-cache-dir -r requirements-inference.txt
+RUN pip install --no-cache-dir -r requirements-api.txt
 
 # Copy entire project
 COPY . /app
