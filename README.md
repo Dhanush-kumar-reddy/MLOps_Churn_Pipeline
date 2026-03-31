@@ -17,19 +17,19 @@ Identify customers likely to churn so the company can take preventive actions su
 
 ## Business Problem
 
-![Business](assets/business.png)
+![Business](images/business.png)
 
 ---
 
 ## 🏗️ Project Architecture
 
-![Architecture](assets/architecture.png)
+![Architecture](images/architecture.png)
 
 ---
 
 ## 🔄 ML Pipeline Flow
 
-![Flow](assets/flow.png)
+![Flow](images/flow.png)
 
 ---
 
