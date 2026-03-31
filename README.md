@@ -1,235 +1,210 @@
-# Customer Churn Prediction — End-to-End MLOps Project
+# MLOps Customer Churn Prediction Pipeline
 
-## 📌 Business Problem
+## 📌 Project Overview
+This project is an **end-to-end MLOps pipeline** for predicting customer churn using Machine Learning.  
+The system automates data ingestion, feature engineering, model training, evaluation, experiment tracking, and deployment using modern MLOps tools.
 
-Customer churn is a major problem in telecom, banking, and subscription-based companies.  
-Acquiring a new customer costs 5–10× more than retaining an existing customer.
-
-Companies want to:
-- Predict which customers will churn
-- Take action (offers, discounts, support)
-- Reduce revenue loss
-
-This project builds a **Customer Churn Prediction System** and deploys it using a complete **MLOps pipeline**.
+The trained model is deployed as an API using FastAPI and Docker, and the entire ML pipeline is orchestrated using Airflow and automated using GitHub Actions (CI/CD).
 
 ---
 
-## 🎯 Problem Statement
+## 📊 Problem Statement
+Customer churn is a major problem for telecom and subscription-based companies. Acquiring new customers is more expensive than retaining existing customers.  
+This project predicts whether a customer will churn based on their service usage and account information.
 
-The goal of this project is to build a machine learning system that:
+**Business Goal:**  
+Identify customers likely to churn so the company can take preventive actions such as offers, discounts, or customer support.
 
-1. Predicts whether a customer will churn or not
-2. Tracks experiments using MLflow
-3. Automates training using Airflow
-4. Deploys the model using FastAPI
-5. Containerizes the application using Docker
-6. Automates deployment using GitHub Actions
-7. Monitors the system using Prometheus & Grafana
+## Business Problem
 
-This is a **production-level ML system**, not just a model.
+![Business](assets/business.png)
 
 ---
 
 ## 🏗️ Project Architecture
 
-![Architecture](images/architecture.png)
-
-### Architecture Explanation
-
-The system consists of the following components:
-
-| Component | Description |
-|----------|-------------|
-| Data Ingestion | Loads raw data |
-| Feature Engineering | Creates new features |
-| Data Preprocessing | Scaling & encoding |
-| Model Training | Train ML models |
-| MLflow | Experiment tracking |
-| Airflow | Pipeline automation |
-| FastAPI | Model API |
-| Docker | Containerization |
-| GitHub Actions | CI/CD |
+![Architecture](assets/architecture.png)
 
 ---
 
-## 🔄 Project Flow Diagram
+## 🔄 ML Pipeline Flow
 
-![Flow Diagram](images/flow.png)
-
-### Pipeline Flow
-
-Data → Feature Engineering → Preprocessing → Model Training → Evaluation
-↓
-MLflow
-↓
-Best Model
-↓
-FastAPI
-↓
-Docker
-↓
-Deployment
-
-
+![Flow](assets/flow.png)
 
 ---
 
-## 💼 Business Use Case
-
-![Business Use Case](images/business.png)
-
-The model predicts customers who are likely to churn so that the company can:
-- Offer discounts
-- Provide better support
-- Improve customer retention
-- Increase revenue
-
----
-
-## 🧠 Machine Learning Models Used
-
-- Logistic Regression
-- Decision Tree
-- Random Forest
-- XGBoost (Best Model)
-
-### Evaluation Metrics
-
-- Accuracy
-- Precision
-- Recall
-- F1 Score
-- ROC-AUC
-- Confusion Matrix
-
-### Final Model Performance
-
-| Metric | Score |
-|-------|------|
-| Accuracy | ~0.77 |
-| Precision | ~0.55 |
-| Recall | ~0.74 |
-| F1 Score | ~0.63 |
-| ROC-AUC | ~0.84 |
-
-Threshold tuning improved **Recall to ~0.81**, which is important for churn prediction.
-
----
-
-## 🛠️ Tech Stack
+## 🧰 Tech Stack
 
 | Category | Tools Used |
 |---------|------------|
 | Programming | Python |
-| Data Processing | Pandas, NumPy |
-| Visualization | Matplotlib, Seaborn |
 | Machine Learning | Scikit-learn, XGBoost |
 | Experiment Tracking | MLflow |
-| Pipeline Automation | Apache Airflow |
 | API | FastAPI |
 | Containerization | Docker |
+| Workflow Orchestration | Airflow |
 | CI/CD | GitHub Actions |
-| Monitoring | Prometheus |
-| Dashboard | Grafana |
+| Configuration | YAML |
+| Version Control | GitHub |
 
 ---
 
 ## 📁 Project Structure
 
-
-Data → Feature Engineering → Preprocessing → Model Training → Evaluation
-↓
-MLflow
-↓
-Best Model
-↓
-FastAPI
-↓
-Docker
-↓
-Deployment
-
+MLOps-Churn-Pipeline/
+│
+├── config/
+│   └── config.yaml
+│
+├── src/
+│   ├── data_ingestion/
+│   ├── feature_engineering/
+│   ├── data_preprocessing/
+│   ├── model_training/
+│   ├── pipeline/
+│   ├── logger.py
+│   ├── exception.py
+│   └── utils.py
+│
+├── app/
+│   └── app.py
+│
+├── airflow/
+│   └── dags/
+│       └── churn_pipeline.py
+│
+├── models/
+│
+├── Dockerfile
+├── requirements.txt
+├── requirements-api.txt
+├── README.md
+└── .github/workflows/mlops.yml
 
 ---
 
+## ⚙️ How to Run the Project Locally
 
----
+### 1️⃣ Create Virtual Environment
 
-## ▶️ How to Run the Project
+python3.10 -m venv venv
+source venv/bin/activate
 
-### Step 1 — Train Model
+### 2️⃣ Install Dependencies
 
-```bash
+pip install -r requirements.txt
+
+### 3️⃣ Run Training Pipeline 
+
 python -m src.data_ingestion.data_ingestion
 python -m src.feature_engineering.feature_engineering
 python -m src.data_preprocessing.data_preprocessing
 python -m src.model_training.train
 python -m src.model_training.evaluate
 
+### 4️⃣ Run FastAPI
 
-Step 2 — Run MLflow
-mlflow server \
---backend-store-uri sqlite:///mlflow.db \
---default-artifact-root ./mlflow \
---host 127.0.0.1 \
---port 5001
+uvicorn app.app:app –reload
 
 Open:
-http://127.0.0.1:5001
 
-Step 3 — Run FastAPI
-uvicorn app.app:app --reload
-
-Open:
 http://127.0.0.1:8000/docs
-
-Step 4 — Run Docker
-docker build -t churn-api .
-docker run -p 8000:8000 churn-api
-Step 5 — Run Airflow
-airflow standalone
-
-Open:
-http://localhost:8080
-🔁 CI/CD Pipeline (GitHub Actions)
-
-Whenever code is pushed to GitHub:
-
-GitHub Actions runs
-Docker image builds
-API deploys automatically
-
-This automates deployment.
-
-
-API requests
-Errors
-Latency
-Model performance
-🚀 Key MLOps Concepts Used
-Data Pipeline
-Feature Engineering Pipeline
-Model Training Pipeline
-Experiment Tracking
-Model Versioning
-CI/CD Pipeline
-Containerization
-API Deployment
-Pipeline Scheduling
-
-🏁 Conclusion
-
-This project demonstrates how to build a production-ready end-to-end machine learning system using MLOps tools.
-It covers the complete lifecycle from data ingestion to model deployment and monitoring.
-
-This is not just a machine learning model — it is a complete ML production system.
-
-👤 Author
-
-Gajjala Dhanush kumar reddy
-Data Science | Machine Learning | MLOps
-
 
 ---
 
+## 🐳 Run Using Docker
 
+### Build Docker Image
+
+docker build -t churn-api .
+
+### Run Docker Container
+
+docker run -p 8000:8000 churn-api
+
+Open:
+
+http://127.0.0.1:8000/docs
+
+---
+
+## ⏰ Run Airflow Pipeline
+
+export AIRFLOW_HOME=~/MLOps-Churn-Pipeline/airflow
+airflow standalone
+
+Open Airflow UI:
+
+http://localhost:8080
+
+Trigger DAG:
+
+customer_churn_pipeline
+
+---
+
+## 📈 MLflow Experiment Tracking
+
+Run MLflow:
+
+mlflow ui –port 5001
+
+Open:
+
+http://127.0.0.1:5001
+
+---
+
+## 🤖 Model Output
+
+The model returns:
+
+| Output | Meaning |
+|-------|---------|
+| Churn_Prediction = 1 | Customer will churn |
+| Churn_Prediction = 0 | Customer will not churn |
+| Churn_Probability | Probability of churn |
+
+Threshold tuned to **0.40** to improve recall and catch more churn customers.
+
+---
+
+## 🔁 CI/CD Pipeline (GitHub Actions)
+
+This project uses GitHub Actions to:
+- Install dependencies
+- Run training pipeline
+- Train model
+- Evaluate model
+- Build Docker image
+
+This automates the ML pipeline when new code is pushed.
+
+---
+
+## 🚀 Future Improvements
+- Deploy on AWS EC2
+- Use AWS S3 for data storage
+- Use AWS ECR for Docker images
+- Add model monitoring
+- Add data drift detection
+
+---
+
+## 👨‍💻 Author
+**Dhanush Kumar**  
+AIML Engineer | Data Science | MLOps
+
+---
+
+## ⭐ Conclusion
+This project demonstrates a **complete end-to-end MLOps pipeline** including:
+- Data pipeline
+- Model training
+- Experiment tracking
+- API deployment
+- Docker containerization
+- Workflow automation
+- CI/CD automation
+
+This is a production-style ML system.
