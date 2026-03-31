@@ -1,35 +1,47 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
+# Virtual env
 venv/
 env/
 
+# Data
 data/raw/
 data/interim/
 data/processed/
 
+# Models
 models/*.pkl
 models/*.joblib
 models/*.csv
 
+# MLflow
 mlruns/
 mlflow.db
 mlflow/
 
-airflow/
-airflow.db
+# Airflow (ignore logs, keep dags)
+airflow/logs/
+airflow/airflow.db
 
+# Logs
 logs/
 
+# System
 .DS_Store
 .env
 
-.ipynb_checkpoints
+# Jupyter
+.ipynb_checkpoints/
 
+# Archives
 *.tar
 
+# VS Code
 .vscode/
 
+# Salesforce
 .sfdx

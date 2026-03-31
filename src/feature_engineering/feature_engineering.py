@@ -9,9 +9,7 @@ def feature_engineering(input_path, output_path):
     try:
         df = pd.read_csv(input_path)
 
-        # -----------------------
         # Basic Cleaning
-        # -----------------------
         if "customerID" in df.columns:
             df.drop("customerID", axis=1, inplace=True)
 
@@ -30,9 +28,7 @@ def feature_engineering(input_path, output_path):
 
         df["MultipleLines"] = df["MultipleLines"].replace({"No phone service": "No"})
 
-        # -----------------------
         # Deep Feature Engineering
-        # -----------------------
 
         # Avg Monthly Spend
         df["AvgMonthlySpend"] = df["TotalCharges"] / df["tenure"]

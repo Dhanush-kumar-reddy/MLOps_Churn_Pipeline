@@ -23,15 +23,11 @@ def preprocess_data(train_path, test_path, output_path="data/processed"):
         X_test = test_df.drop("Churn", axis=1)
         y_test = test_df["Churn"]
 
-        # -----------------------
         # Column Alignment
-        # -----------------------
         X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
         logging.info("Column alignment completed")
 
-        # -----------------------
         # Scaling (Fit on Train Only)
-        # -----------------------
         scaler = StandardScaler()
         num_cols = ["tenure", "MonthlyCharges", "TotalCharges", "AvgMonthlySpend", "NumServices"]
 
@@ -40,18 +36,14 @@ def preprocess_data(train_path, test_path, output_path="data/processed"):
 
         logging.info("Scaling completed")
 
-        # -----------------------
         # Save scaler and columns
-        # -----------------------
         os.makedirs("models", exist_ok=True)
         save_object("models/scaler.pkl", scaler)
         save_object("models/columns.pkl", X_train.columns)
 
         logging.info("Scaler and columns saved")
 
-        # -----------------------
         # Save final processed data
-        # -----------------------
         X_train["Churn"] = y_train
         X_test["Churn"] = y_test
 

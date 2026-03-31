@@ -55,10 +55,9 @@ def evaluate_model(test_path):
         logging.info(f"Default Recall: {recall}")
         logging.info(f"Default F1 Score: {f1}")
         logging.info(f"Default ROC-AUC: {roc}")
-
-        # -----------------------------
+        
         # Threshold Tuning
-        # -----------------------------
+        
         fpr, tpr, thresholds = roc_curve(y_test, y_prob)
         J = tpr - fpr
         ix = np.argmax(J)
