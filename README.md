@@ -1,10 +1,10 @@
-# MLOps Customer Churn Prediction Pipeline
+# End-to-End Customer Churn Prediction (MLOps)
 
 ## 📌 Project Overview
 This project is an **end-to-end MLOps pipeline** for predicting customer churn using Machine Learning.  
-The system automates data ingestion, feature engineering, model training, evaluation, experiment tracking, and deployment using modern MLOps tools.
+It automates data ingestion, feature engineering, model training, evaluation, experiment tracking, and deployment using modern MLOps tools.
 
-The trained model is deployed as an API using FastAPI and Docker, and the entire ML pipeline is orchestrated using Airflow and automated using GitHub Actions (CI/CD).
+The trained model is deployed as a REST API using FastAPI and Docker, while the ML pipeline is orchestrated using Airflow and automated using GitHub Actions (CI/CD).
 
 ---
 
@@ -49,6 +49,12 @@ Identify customers likely to churn so the company can take preventive actions su
 
 ---
 
+## ☁️ Cloud Deployment (AWS)
+
+- Docker image is pushed to AWS ECR (Elastic Container Registry)  
+- EC2 instance pulls the image from ECR  
+- FastAPI application is deployed and served via EC2  
+
 ## 📁 Project Structure
 
 MLOps-Churn-Pipeline/
@@ -74,6 +80,10 @@ MLOps-Churn-Pipeline/
 │       └── churn_pipeline.py
 │
 ├── models/
+├── images/
+│   ├── architecture.png
+│   ├── flow.png
+│   └── business.png
 │
 ├── Dockerfile
 ├── requirements.txt
@@ -171,23 +181,20 @@ Threshold tuned to **0.40** to improve recall and catch more churn customers.
 
 ## 🔁 CI/CD Pipeline (GitHub Actions)
 
-This project uses GitHub Actions to:
-- Install dependencies
-- Run training pipeline
-- Train model
-- Evaluate model
-- Build Docker image
 
-This automates the ML pipeline when new code is pushed.
+This project uses GitHub Actions to:
+	•	Install dependencies
+	•	Perform lint checks
+	•	Build Docker image automatically on every push
+
 
 ---
 
 ## 🚀 Future Improvements
-- Deploy on AWS EC2
-- Use AWS S3 for data storage
-- Use AWS ECR for Docker images
-- Add model monitoring
-- Add data drift detection
+	•	Use AWS S3 for scalable data storage
+	•	Implement model monitoring and logging
+	•	Add data drift detection
+	•	Introduce model registry for versioning
 
 ---
 
@@ -198,13 +205,11 @@ AIML Engineer | Data Science | MLOps
 ---
 
 ## ⭐ Conclusion
-This project demonstrates a **complete end-to-end MLOps pipeline** including:
-- Data pipeline
-- Model training
-- Experiment tracking
-- API deployment
-- Docker containerization
-- Workflow automation
-- CI/CD automation
-
-This is a production-style ML system.
+This project demonstrates a complete end-to-end MLOps pipeline including:
+	•	Data pipeline orchestration (Airflow)
+	•	Model training and evaluation
+	•	Experiment tracking (MLflow)
+	•	API deployment (FastAPI)
+	•	Containerization (Docker)
+	•	Cloud deployment (AWS EC2 + ECR)
+	•	CI/CD automation (GitHub Actions)
