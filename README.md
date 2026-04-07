@@ -57,8 +57,6 @@ Identify customers likely to churn so the company can take preventive actions su
 
 ## 📁 Project Structure
 
-'''bash
-
 MLOps-Churn-Pipeline/
 │
 ├── config/
@@ -95,7 +93,6 @@ MLOps-Churn-Pipeline/
 └── .github/
 └── workflows/
 └── mlops.yml
-'''
 
 ---
 
