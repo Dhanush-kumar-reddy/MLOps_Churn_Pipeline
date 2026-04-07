@@ -56,7 +56,8 @@ Identify customers likely to churn so the company can take preventive actions su
 - FastAPI application is deployed and served via EC2  
 
 ## 📁 Project Structure
-'''
+
+'''bash
 
 MLOps-Churn-Pipeline/
 │
