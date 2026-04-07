@@ -56,6 +56,7 @@ Identify customers likely to churn so the company can take preventive actions su
 - FastAPI application is deployed and served via EC2  
 
 ## 📁 Project Structure
+'''
 
 MLOps-Churn-Pipeline/
 │
@@ -80,6 +81,7 @@ MLOps-Churn-Pipeline/
 │       └── churn_pipeline.py
 │
 ├── models/
+│
 ├── images/
 │   ├── architecture.png
 │   ├── flow.png
@@ -89,7 +91,10 @@ MLOps-Churn-Pipeline/
 ├── requirements.txt
 ├── requirements-api.txt
 ├── README.md
-└── .github/workflows/mlops.yml
+└── .github/
+└── workflows/
+└── mlops.yml
+'''
 
 ---
 
@@ -183,18 +188,18 @@ Threshold tuned to **0.40** to improve recall and catch more churn customers.
 
 
 This project uses GitHub Actions to:
-	•	Install dependencies
-	•	Perform lint checks
-	•	Build Docker image automatically on every push
+- Install dependencies
+- Perform lint checks
+- Build Docker image automatically on every push
 
 
 ---
 
 ## 🚀 Future Improvements
-	•	Use AWS S3 for scalable data storage
-	•	Implement model monitoring and logging
-	•	Add data drift detection
-	•	Introduce model registry for versioning
+- Use AWS S3 for scalable data storage
+- Implement model monitoring and logging
+- Add data drift detection
+- Introduce model registry for versioning
 
 ---
 
@@ -206,10 +211,10 @@ AIML Engineer | Data Science | MLOps
 
 ## ⭐ Conclusion
 This project demonstrates a complete end-to-end MLOps pipeline including:
-	•	Data pipeline orchestration (Airflow)
-	•	Model training and evaluation
-	•	Experiment tracking (MLflow)
-	•	API deployment (FastAPI)
-	•	Containerization (Docker)
-	•	Cloud deployment (AWS EC2 + ECR)
-	•	CI/CD automation (GitHub Actions)
+- Data pipeline orchestration (Airflow)
+- Model training and evaluation
+- Experiment tracking (MLflow)
+- API deployment (FastAPI)
+- Containerization (Docker)
+- Cloud deployment (AWS EC2 + ECR)
+- CI/CD automation (GitHub Actions)
