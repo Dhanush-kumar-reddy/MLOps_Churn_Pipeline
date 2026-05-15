@@ -1,98 +1,187 @@
 # End-to-End Customer Churn Prediction (MLOps)
 
 ## 📌 Project Overview
-This project is an **end-to-end MLOps pipeline** for predicting customer churn using Machine Learning.  
-It automates data ingestion, feature engineering, model training, evaluation, experiment tracking, and deployment using modern MLOps tools.
 
-The trained model is deployed as a REST API using FastAPI and Docker, while the ML pipeline is orchestrated using Airflow and automated using GitHub Actions (CI/CD).
+This project is an end-to-end MLOps pipeline for predicting customer churn using Machine Learning.
+
+The pipeline automates:
+- data ingestion
+- feature engineering
+- data preprocessing
+- model training
+- model evaluation
+- experiment tracking
+
+The project uses:
+- Airflow for workflow orchestration
+- MLflow for experiment tracking
+- FastAPI for serving predictions
+- Docker for containerization
+- GitHub Actions for CI/CD automation
+
+The trained model is exposed through a REST API using FastAPI.
 
 ---
 
 ## 📊 Problem Statement
-Customer churn is a major problem for telecom and subscription-based companies. Acquiring new customers is more expensive than retaining existing customers.  
-This project predicts whether a customer will churn based on their service usage and account information.
 
-**Business Goal:**  
-Identify customers likely to churn so the company can take preventive actions such as offers, discounts, or customer support.
+Customer churn is a major problem for telecom and subscription-based companies. Acquiring new customers is more expensive than retaining existing customers.
 
-## Business Problem
+This project predicts whether a customer will churn based on customer service usage and account-related information.
+
+### Business Goal
+
+Identify customers likely to churn so the business can take preventive actions such as:
+- retention campaigns
+- offers and discounts
+- customer support interventions
+
+---
+
+## 🧠 Business Understanding
 
 ![Business](images/business.png)
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ CI/CD & Deployment Architecture
 
 ![Architecture](images/architecture.png)
 
 ---
 
-## 🔄 ML Pipeline Flow
+## 🔄 ML Pipeline Architecture
 
 ![Flow](images/flow.png)
+
+---
+
+## ⏰ Airflow Pipeline Orchestration
+
+![Airflow Pipeline](images/airflow_pipeline.png)
+
+The Airflow DAG orchestrates the complete ML workflow:
+
+1. Data Ingestion  
+2. Feature Engineering  
+3. Data Preprocessing  
+4. Model Training  
+5. Model Evaluation  
+
+---
+
+## 📈 MLflow Experiment Tracking
+
+### Experiment Tracking & Model Comparison
+
+![MLflow Models](images/mlflow_models.png)
+
+MLflow is used to:
+- track experiments
+- compare multiple models
+- store parameters and metrics
+- log trained models
+
+Tracked models include:
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- XGBoost
+
+---
+
+## 📊 MLflow Run Details
+
+![MLflow Run](images/mlflow_run.png)
+
+The MLflow run page stores:
+- model metrics
+- hyperparameters
+- run duration
+- logged artifacts
+- experiment metadata
 
 ---
 
 ## 🧰 Tech Stack
 
 | Category | Tools Used |
-|---------|------------|
+|----------|-------------|
 | Programming | Python |
 | Machine Learning | Scikit-learn, XGBoost |
 | Experiment Tracking | MLflow |
-| API | FastAPI |
+| Workflow Orchestration | Apache Airflow |
+| API Framework | FastAPI |
 | Containerization | Docker |
-| Workflow Orchestration | Airflow |
 | CI/CD | GitHub Actions |
 | Configuration | YAML |
 | Version Control | GitHub |
 
 ---
 
-## ☁️ Cloud Deployment (AWS)
+## ☁️ Deployment Workflow
 
-- Docker image is pushed to AWS ECR (Elastic Container Registry)  
-- EC2 instance pulls the image from ECR  
-- FastAPI application is deployed and served via EC2  
+The CI/CD and deployment workflow includes:
+
+- GitHub Actions pipeline execution
+- Docker image build process
+- AWS ECR image storage
+- EC2-based container deployment
+- FastAPI application serving
+
+---
 
 ## 📁 Project Structure
 
+```text
 MLOps-Churn-Pipeline/
+│
+├── airflow/
+│   └── dags/
+│       └── churn_pipeline.py
+│
+├── app/
+│   └── app.py
 │
 ├── config/
 │   └── config.yaml
+│
+├── data/
+│
+├── images/
+│   ├── architecture.png
+│   ├── business.png
+│   ├── flow.png
+│   ├── airflow_pipeline.png
+│   ├── mlflow_models.png
+│   └── mlflow_run.png
+│
+├── mlflow/
+│
+├── models/
+│
+├── notebooks/
 │
 ├── src/
 │   ├── data_ingestion/
 │   ├── feature_engineering/
 │   ├── data_preprocessing/
 │   ├── model_training/
-│   ├── pipeline/
-│   ├── logger.py
 │   ├── exception.py
+│   ├── logger.py
 │   └── utils.py
 │
-├── app/
-│   └── app.py
-│
-├── airflow/
-│   └── dags/
-│       └── churn_pipeline.py
-│
-├── models/
-│
-├── images/
-│   ├── architecture.png
-│   ├── flow.png
-│   └── business.png
+├── .github/
+│   └── workflows/
+│       └── mlops.yml
 │
 ├── Dockerfile
+├── README.md
 ├── requirements.txt
 ├── requirements-api.txt
-├── README.md
-└── .github/
-└── workflows/
-└── mlops.yml
+├── setup.py
+└── test_predict.py
+```
 
 ---
 
@@ -100,28 +189,44 @@ MLOps-Churn-Pipeline/
 
 ### 1️⃣ Create Virtual Environment
 
+```bash
 python3.10 -m venv venv
 source venv/bin/activate
+```
+
+---
 
 ### 2️⃣ Install Dependencies
 
+```bash
 pip install -r requirements.txt
+```
 
-### 3️⃣ Run Training Pipeline 
+---
 
+### 3️⃣ Run Training Pipeline
+
+```bash
 python -m src.data_ingestion.data_ingestion
 python -m src.feature_engineering.feature_engineering
 python -m src.data_preprocessing.data_preprocessing
 python -m src.model_training.train
 python -m src.model_training.evaluate
+```
 
-### 4️⃣ Run FastAPI
+---
 
-uvicorn app.app:app –reload
+### 4️⃣ Run FastAPI Application
+
+```bash
+uvicorn app.app:app --reload
+```
 
 Open:
 
+```text
 http://127.0.0.1:8000/docs
+```
 
 ---
 
@@ -129,90 +234,105 @@ http://127.0.0.1:8000/docs
 
 ### Build Docker Image
 
+```bash
 docker build -t churn-api .
+```
 
 ### Run Docker Container
 
+```bash
 docker run -p 8000:8000 churn-api
+```
 
 Open:
 
+```text
 http://127.0.0.1:8000/docs
+```
 
 ---
 
-## ⏰ Run Airflow Pipeline
+## ⏰ Run Airflow
 
+```bash
 export AIRFLOW_HOME=~/MLOps-Churn-Pipeline/airflow
+
 airflow standalone
+```
 
 Open Airflow UI:
 
+```text
 http://localhost:8080
+```
 
 Trigger DAG:
 
+```text
 customer_churn_pipeline
+```
 
 ---
 
-## 📈 MLflow Experiment Tracking
+## 📈 Run MLflow
 
-Run MLflow:
-
-mlflow ui –port 5001
+```bash
+mlflow ui --port 5001
+```
 
 Open:
 
+```text
 http://127.0.0.1:5001
+```
 
 ---
 
 ## 🤖 Model Output
 
-The model returns:
+The API returns:
 
 | Output | Meaning |
-|-------|---------|
-| Churn_Prediction = 1 | Customer will churn |
-| Churn_Prediction = 0 | Customer will not churn |
-| Churn_Probability | Probability of churn |
-
-Threshold tuned to **0.40** to improve recall and catch more churn customers.
+|--------|----------|
+| Churn_Prediction = 1 | Customer likely to churn |
+| Churn_Prediction = 0 | Customer likely to stay |
+| Churn_Probability | Probability score |
 
 ---
 
-## 🔁 CI/CD Pipeline (GitHub Actions)
+## 🔁 CI/CD Pipeline
 
-
-This project uses GitHub Actions to:
-- Install dependencies
-- Perform lint checks
-- Build Docker image automatically on every push
-
+GitHub Actions is used to:
+- install dependencies
+- automate Docker builds
+- support CI workflow automation
 
 ---
 
 ## 🚀 Future Improvements
-- Use AWS S3 for scalable data storage
-- Implement model monitoring and logging
+
+- Add model monitoring
 - Add data drift detection
-- Introduce model registry for versioning
+- Use cloud-based storage
+- Add automated retraining pipeline
+- Implement model registry workflow
 
 ---
 
 ## 👨‍💻 Author
+
 **Dhanush Kumar**  
 AIML Engineer | Data Science | MLOps
 
 ---
 
 ## ⭐ Conclusion
-This project demonstrates a complete end-to-end MLOps pipeline including:
-- Data pipeline orchestration (Airflow)
-- Model training and evaluation
-- Experiment tracking (MLflow)
-- API deployment (FastAPI)
-- Containerization (Docker)
-- Cloud deployment (AWS EC2 + ECR)
-- CI/CD automation (GitHub Actions)
+
+This project demonstrates:
+- end-to-end ML pipeline development
+- workflow orchestration using Airflow
+- experiment tracking using MLflow
+- FastAPI-based model serving
+- Docker containerization
+- CI/CD workflow automation
+- AWS deployment architecture

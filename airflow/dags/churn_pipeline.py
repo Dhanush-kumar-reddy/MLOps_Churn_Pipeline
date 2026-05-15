@@ -1,7 +1,10 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from datetime import datetime
+import sys
+import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from src.utils import load_config
 
 config = load_config()
